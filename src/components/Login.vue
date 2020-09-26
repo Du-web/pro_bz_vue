@@ -17,7 +17,7 @@
                     <div id="geetest1"></div>
                     <div class="rember">
                         <p>
-                            <input type="checkbox" class="no" />
+                            <input type="checkbox" class="no" v-model="remember_me"/>
                             <span>记住密码</span>
                         </p>
                         <p>忘记密码</p>
@@ -46,16 +46,67 @@
         name: "Login",
         data(){
             return{
-                username: "",
-                password: "",
+                username: '',
+                password: '',
+                remember_me: false,
             }
         },
         methods: {
-
+            // // 获取验证码  点击登录时获取验证码  验证码验证成功后  直接完成登录
+            // get_captcha() {
+            //     // 想API服务器获取验证码
+            //     this.$axios({
+            //         url: this.$settings.HOST + "user/captcha/",
+            //         method: "get",
+            //         params: {
+            //             username: this.username,
+            //         }
+            //     }).then(response => {
+            //         let data = JSON.parse(response.data);
+            //         // console.log(data, "222222");
+            //         // 使用initGeetest接口
+            //         // 参数1：配置参数
+            //         // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
+            //         initGeetest({
+            //             gt: data.gt,
+            //             challenge: data.challenge,
+            //             product: "popup", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效
+            //             offline: !data.success, // 表示用户后台检测极验服务器是否宕机，一般不需要关注
+            //             new_captcha: data.new_captcha
+            //         }, this.handlerPopup);
+            //     }).catch(error => {
+            //         console.log(error);
+            //     })
+            // },
+            // // 请求验证码的回调函数  完成验证码的验证
+            // handlerPopup(captchaObj) {
+            //     let self = this;
+            //     captchaObj.onSuccess(function () {
+            //         let validate = captchaObj.getValidate();
+            //         self.$axios({
+            //             url: self.$settings.HOST + "user/captcha/",
+            //             method: "post",
+            //             data: {
+            //                 geetest_challenge: validate.geetest_challenge,
+            //                 geetest_validate: validate.geetest_validate,
+            //                 geetest_seccode: validate.geetest_seccode
+            //             },
+            //         }).then(response => {
+            //             console.log(response.data);
+            //             // 完成登录
+            //             self.user_login();
+            //         }).catch(error => {
+            //             console.log(error);
+            //         });
+            //     });
+            //
+            //     // 将验证码加到id为captcha的元素里
+            //     document.getElementById("geetest1").innerHTML = "";
+            //     captchaObj.appendTo("#geetest1");
+            // },
 
             // 用户登录请求
             user_login() {
-                alert('123')
                 this.$axios({
                     url: this.$settings.HOST + 'user/login/',
                     method: 'post',
@@ -65,12 +116,14 @@
                      }
                 }).then(response => {
                     console.log(response);
-                    // //  为True则代表需要记住密码，将用户信息记录下来
-                    // localStorage.setItem("token", response.data.token)
-                    // if (this.remember_me) {
-                    // } else {
-                    //     // false记录密码  则将用户信息清楚
-                    // }
+                    //  为True则代表需要记住密码，将用户信息记录下来
+                    sessionStorage.setItem("token", response.data.token)
+                    if (this.remember_me) {
+                        sessionStorage.setItem('name', this.username)
+                    } else {
+                        // false记录密码  则将用户信息清楚
+                        sessionStorage.removeItem('name')
+                    }
                     this.$message({
                         message: '恭喜你，登录成功',
                         type: 'success',
@@ -78,10 +131,10 @@
                         duration: 1000,
                     });
                     // 登录成功后返回首页
-                    // this.$router.push("/");
+                    this.$router.push("/");
                 }).catch(error => {
                     console.log(error);
-                    // this.$message.error('用户名密码错误');
+                    this.$message.error('用户名密码错误');
                 })
             },
         }
