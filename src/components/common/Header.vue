@@ -7,7 +7,10 @@
                 </div>
                 <ul class="nav full-left">
                     <li v-for="(header, key) in header_list" :key="key">
-                        <span>{{header.title}}</span>
+                        <a :href="header.link">
+                            <span>{{header.title}}</span>
+                        </a>
+
                     </li>
                 </ul>
                 <div class="login-bar full-right">

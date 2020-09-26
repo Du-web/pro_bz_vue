@@ -1,7 +1,9 @@
 <template>
     <div class="footer">
         <ul>
-            <li v-for="(footer, key) in footer_list" :key="key">{{footer.title}}</li>
+            <li v-for="(footer, key) in footer_list" :key="key">
+                <a :href="footer.link">{{footer.title}}</a>
+            </li>
         </ul>
     </div>
 </template>
