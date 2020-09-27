@@ -119,10 +119,12 @@
                     //  为True则代表需要记住密码，将用户信息记录下来
                     sessionStorage.setItem("token", response.data.token)
                     if (this.remember_me) {
-                        sessionStorage.setItem('name', this.username)
+                        localStorage.setItem('name', this.username)
+                        localStorage.setItem('pwd', this.password)
                     } else {
                         // false记录密码  则将用户信息清楚
-                        sessionStorage.removeItem('name')
+                        localStorage.removeItem ('name')
+                        localStorage.removeItem ('pwd')
                     }
                     this.$message({
                         message: '恭喜你，登录成功',
@@ -137,6 +139,31 @@
                     this.$message.error('用户名密码错误');
                 })
             },
+
+            get_name(){
+                let local_name = localStorage.name;
+                let local_pwd = localStorage.pwd;
+                if (local_name && local_pwd){
+                    this.$axios({
+                        url: this.$settings.HOST + 'user/login/',
+                        method: 'post',
+                        data: {
+                            username: local_name,
+                            password: local_pwd
+                        }
+                    }).then(res => {
+                        console.log(res);
+                        sessionStorage.setItem("token", res.data.token)
+                        this.$router.push('/')
+                    }).catch(error => {
+                        this.$message.error('请登录');
+                    })
+
+                }
+            }
+        },
+        created() {
+            this.get_name()
         }
     }
 </script>
