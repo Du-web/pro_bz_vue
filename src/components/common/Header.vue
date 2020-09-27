@@ -22,7 +22,7 @@
                     <div class="login-box full-left">
                         <router-link to="/login">个人中心</router-link>
                         &nbsp;|&nbsp;
-                        <span>退出登录</span>
+                        <router-link to="/login">退出登录</router-link>
                     </div>
                 </div>
                 <div class="login-bar full-right" v-else>

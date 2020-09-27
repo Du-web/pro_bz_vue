@@ -24,7 +24,7 @@
                     </div>
                     <button class="login_btn btn btn-primary" @click="get_captcha">登录</button>
                     <p class="go_login">没有账号
-                        <router-link to="/user/register/">立即注册</router-link>
+                        <router-link to="/register">立即注册</router-link>
                     </p>
                 </div>
                 <div class="inp" v-show="">
