@@ -5,12 +5,15 @@
             <div class="register_box">
                 <div class="register-title">百知教育在线平台注册</div>
                 <div class="inp">
-                    <input v-model="phone" type="text" placeholder="手机号码" class="user">
-                    <input v-model="password" type="password" placeholder="登录密码" class="user">
+                    <input v-model="phone" type="text" placeholder="手机号码" class="user" @blur="check_phone"> <br>
+                    <span style="color: red">{{span_phone}}</span>
+                    <input v-model="password" type="password" placeholder="登录密码" class="user" @blur="check_pwd">
+                    <br>
+                    <span style="color: red">{{span_pwd}}</span>
                     <div id="geetest"></div>
                     <div class="sms-box">
                         <input v-model="code" type="text" maxlength="6" placeholder="输入验证码" class="user">
-                        <div class="sms-btn">请输入验证码</div>
+                        <div class="sms-btn" @click="send_msg">{{sms_text}}</div>
                     </div>
                     <button class="register_btn" @click="user_register">注册</button>
                     <p class="go_login">已有账号
@@ -30,7 +33,10 @@
             return {
                 phone: '',
                 password: '',
-                code: ''
+                code: '',
+                span_phone: '',
+                span_pwd: '',
+                sms_text: '',
             }
         },
         methods: {
@@ -44,12 +50,46 @@
                     }
                 }).then(res => {
                     console.log(res);
-
+                    sessionStorage.setItem("token", res.data.token)
+                    let self = this;
+                    this.$alert('注册成功', {
+                        callback(){
+                            self.$router.push('/')
+                        }
+                    })
                 }).catch(error => {
                     console.log(error);
 
                 })
             },
+            check_phone(){
+                if (!/1[356789]\d{9}/.test(this.phone)) {
+                    this.span_phone = '请填写正确的电话';
+                    return false;
+                }
+                this.span_phone = '';
+                this.$axios({
+                    url:this.$settings.HOST + 'user/phone/',
+                    method: 'get',
+                    params: {
+                        phone: this.phone
+                    }
+                }).then(res => {
+                    console.log(res);
+                    this.span_phone = res.data
+                }).catch(error => {
+                    console.log(error);
+                    this.$message.error("再试一次")
+                })
+            },
+            check_pwd(){
+                if (!/^\w{6,18}$/.test(this.password)){
+                    this.span_pwd = '密码必须为6到18位字母、数字或下划线';
+                    return false;
+                }
+                return this.span_pwd = '';
+            },
+
 
         }
     }
