@@ -7,6 +7,7 @@ import axios from "axios"
 import Element from "element-ui"
 import "element-ui/lib/theme-chalk/index.css"
 import "../static/css/global.css"
+import '../static/js/gt'
 
 
 Vue.prototype.$axios = axios;

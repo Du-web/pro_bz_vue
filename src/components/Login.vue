@@ -22,7 +22,7 @@
                         </p>
                         <p>忘记密码</p>
                     </div>
-                    <button class="login_btn btn btn-primary" @click="user_login">登录</button>
+                    <button class="login_btn btn btn-primary" @click="get_captcha">登录</button>
                     <p class="go_login">没有账号
                         <router-link to="/user/register/">立即注册</router-link>
                     </p>
@@ -52,58 +52,58 @@
             }
         },
         methods: {
-            // // 获取验证码  点击登录时获取验证码  验证码验证成功后  直接完成登录
-            // get_captcha() {
-            //     // 想API服务器获取验证码
-            //     this.$axios({
-            //         url: this.$settings.HOST + "user/captcha/",
-            //         method: "get",
-            //         params: {
-            //             username: this.username,
-            //         }
-            //     }).then(response => {
-            //         let data = JSON.parse(response.data);
-            //         // console.log(data, "222222");
-            //         // 使用initGeetest接口
-            //         // 参数1：配置参数
-            //         // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
-            //         initGeetest({
-            //             gt: data.gt,
-            //             challenge: data.challenge,
-            //             product: "popup", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效
-            //             offline: !data.success, // 表示用户后台检测极验服务器是否宕机，一般不需要关注
-            //             new_captcha: data.new_captcha
-            //         }, this.handlerPopup);
-            //     }).catch(error => {
-            //         console.log(error);
-            //     })
-            // },
-            // // 请求验证码的回调函数  完成验证码的验证
-            // handlerPopup(captchaObj) {
-            //     let self = this;
-            //     captchaObj.onSuccess(function () {
-            //         let validate = captchaObj.getValidate();
-            //         self.$axios({
-            //             url: self.$settings.HOST + "user/captcha/",
-            //             method: "post",
-            //             data: {
-            //                 geetest_challenge: validate.geetest_challenge,
-            //                 geetest_validate: validate.geetest_validate,
-            //                 geetest_seccode: validate.geetest_seccode
-            //             },
-            //         }).then(response => {
-            //             console.log(response.data);
-            //             // 完成登录
-            //             self.user_login();
-            //         }).catch(error => {
-            //             console.log(error);
-            //         });
-            //     });
-            //
-            //     // 将验证码加到id为captcha的元素里
-            //     document.getElementById("geetest1").innerHTML = "";
-            //     captchaObj.appendTo("#geetest1");
-            // },
+            // 获取验证码  点击登录时获取验证码  验证码验证成功后  直接完成登录
+            get_captcha() {
+                // 想API服务器获取验证码
+                this.$axios({
+                    url: this.$settings.HOST + "user/captcha/",
+                    method: "get",
+                    params: {
+                        username: this.username,
+                    }
+                }).then(response => {
+                    let data = JSON.parse(response.data);
+                    // console.log(data, "222222");
+                    // 使用initGeetest接口
+                    // 参数1：配置参数
+                    // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
+                    initGeetest({
+                        gt: data.gt,
+                        challenge: data.challenge,
+                        product: "popup", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效
+                        offline: !data.success, // 表示用户后台检测极验服务器是否宕机，一般不需要关注
+                        new_captcha: data.new_captcha
+                    }, this.handlerPopup);
+                }).catch(error => {
+                    console.log(error);
+                })
+            },
+            // 请求验证码的回调函数  完成验证码的验证
+            handlerPopup(captchaObj) {
+                let self = this;
+                captchaObj.onSuccess(function () {
+                    let validate = captchaObj.getValidate();
+                    self.$axios({
+                        url: self.$settings.HOST + "user/captcha/",
+                        method: "post",
+                        data: {
+                            geetest_challenge: validate.geetest_challenge,
+                            geetest_validate: validate.geetest_validate,
+                            geetest_seccode: validate.geetest_seccode
+                        },
+                    }).then(response => {
+                        console.log(response.data);
+                        // 完成登录
+                        self.user_login();
+                    }).catch(error => {
+                        console.log(error);
+                    });
+                });
+
+                // 将验证码加到id为captcha的元素里
+                document.getElementById("geetest1").innerHTML = "";
+                captchaObj.appendTo("#geetest1");
+            },
 
             // 用户登录请求
             user_login() {
