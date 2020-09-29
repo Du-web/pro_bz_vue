@@ -8,10 +8,10 @@
             </div>
             <div class="login_box">
                 <div class="title">
-                    <span>密码登录</span>
-                    <span>短信登录</span>
+                    <span @click="showPWD">密码登录</span>
+                    <span @click="showMsg">短信登录</span>
                 </div>
-                <div class="inp" v-if="">
+                <div class="inp" v-if="isDel">
                     <input type="text" placeholder="用户名 / 手机号码" class="user" v-model="username">
                     <input type="password" name="" class="pwd" placeholder="密码" v-model="password">
                     <div id="geetest1"></div>
@@ -27,13 +27,13 @@
                         <router-link to="/register">立即注册</router-link>
                     </p>
                 </div>
-                <div class="inp" v-show="">
-                    <input type="text" placeholder="手机号码" class="user">
-                    <input type="text" class="pwd" placeholder="短信验证码">
-                    <button id="get_code" class="btn btn-primary">获取验证码</button>
-                    <button class="login_btn">登录</button>
+                <div class="inp" v-show="isShow" >
+                    <input type="text" placeholder="手机号码" class="user" v-model="phone">
+                    <input type="text" class="pwd" placeholder="短信验证码" v-model="code">
+                    <button id="get_code" class="btn btn-primary" @click="get_code">获取验证码</button>
+                    <button class="login_btn" @click="get_login">登录</button>
                     <span class="go_login">没有账号
-                    <router-link to="/user/register/">立即注册</router-link>
+                    <router-link to="/register">立即注册</router-link>
                 </span>
                 </div>
             </div>
@@ -48,7 +48,11 @@
             return{
                 username: '',
                 password: '',
+                phone: '',
+                code: '',
                 remember_me: false,
+                isShow: false,
+                isDel: true,
             }
         },
         methods: {
@@ -113,6 +117,8 @@
                     data: {
                         username: this.username,
                         password: this.password,
+                        phone: this.phone,
+                        code: this.code
                      }
                 }).then(response => {
                     console.log(response);
@@ -160,8 +166,58 @@
                     })
 
                 }
-            }
+            },
+
+            showMsg(){
+                this.isShow = true;
+                this.isDel = false;
+            },
+            showPWD(){
+                this.isShow = false;
+                this.isDel = true;
+            },
+            get_code(){
+                // if (!/1[356789]\d{9}/.test(this.phone)) {
+                //     this.$alert("手机号格式有误", "警告");
+                //     return false;
+                // }
+                // this.$axios({
+                //     url: this.$settings.HOST + "user/sms/",
+                //     method: "get",
+                //     params: {
+                //         phone: this.phone,
+                //     }
+                // }).then(response => {
+                //     console.log(response);
+                //
+                //     // 成功提示
+                //     this.$message.success({
+                //         message: '短信已经发送到手机，请注意查收',
+                //         type: 'success',
+                //         showClose: true,
+                //         duration: 1000,
+                //     })
+                //
+                // }).catch(error => {
+                //     console.log(error);
+                //     this.$message.error("当前手机号已经发送过短信")
+                // })
+            },
+            get_login(){
+                // this.$axios({
+                //     url: this.$settings.HOST + "user/getuser/",
+                //     method: "get",
+                //     params: {
+                //         phone: this.phone,
+                //     }
+                // }).then(response => {
+                //     console.log(response);
+                // }).catch(error => {
+                //     console.log(error);
+                // })
+            },
         },
+
         created() {
             this.get_name()
         }

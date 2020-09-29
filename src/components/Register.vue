@@ -36,7 +36,7 @@
                 code: '',
                 span_phone: '',
                 span_pwd: '',
-                sms_text: '',
+                sms_text: '请输入验证码',
             }
         },
         methods: {
@@ -47,6 +47,7 @@
                     data: {
                         phone: this.phone,
                         password: this.password,
+                        code: this.code,
                     }
                 }).then(res => {
                     console.log(res);
@@ -76,7 +77,12 @@
                     }
                 }).then(res => {
                     console.log(res);
-                    this.span_phone = res.data
+                    if (res.data.message === 'no'){
+                        this.span_phone = '该手机号已经被注册';
+                    }else {
+                        this.span_phone = '';
+                    }
+
                 }).catch(error => {
                     console.log(error);
                     this.$message.error("再试一次")
@@ -89,7 +95,33 @@
                 }
                 return this.span_pwd = '';
             },
+            send_msg(){
+                if (!/1[356789]\d{9}/.test(this.phone)) {
+                    this.$alert("手机号格式有误", "警告");
+                    return false;
+                }
+                this.$axios({
+                    url: this.$settings.HOST + 'user/sms/',
+                    method: 'get',
+                    params: {
+                        phone: this.phone
+                    }
+                }).then(res => {
+                    console.log(res);
+                    // 倒计时
 
+                    //成功提示
+                    this.$message.success({
+                        message: '短信已经发送到手机，请注意查收',
+                        type: 'success',
+                        showClose: true,
+                        duration: 1000,
+                    })
+                }).catch(error => {
+                    console.log(error);
+                    this.$message.error("当前手机号已经发送过短信");
+                })
+            },
 
         }
     }
