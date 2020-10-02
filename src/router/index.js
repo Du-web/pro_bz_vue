@@ -4,6 +4,7 @@ import Index from "../components/Index";
 import Login from "../components/Login";
 import Register from "../components/Register";
 import Course from "../components/Course";
+import CourseDetail from "../components/CourseDetail";
 
 
 Vue.use(Router)
@@ -16,5 +17,6 @@ export default new Router({
         {path: '/login', component: Login},
         {path: '/register', component: Register},
         {path: '/course', component: Course},
+        {path: '/detail/:id', component: CourseDetail},
     ]
 })

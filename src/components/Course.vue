@@ -34,11 +34,20 @@
             <div class="course-list">
                 <div class="course-item" v-for="course in course_list">
                     <div class="course-image">
-                        <img :src="course.course_img" alt="">
+                        <router-link :to="'/detail/'+course.id">
+                            <img :src="course.course_img" alt="">
+                        </router-link>
+
                     </div>
                     <div class="course-info">
-                        <h3>{{course.name}} <span><img src="/static/image/avatar1.svg" alt="">{{course.students}}人已加入学习</span></h3>
-                        <p class="teather-info">{{course.teacher.name}} 百知教育教学总监 <span>共{{course.lessons}}课时//{{course.lessons===course.pub_lessons?'更新完成':`已更新${course.pub_lessons}`}}</span></p>
+                        <h3>
+                            <router-link :to="'/detail/'+course.id"><h3>{{course.name}}</h3></router-link>
+                            <span>
+                                <img src="/static/image/avatar1.svg" alt="">
+                                {{course.students}}人已加入学习
+                            </span>
+                        </h3>
+                        <p class="teather-info">{{course.teacher.name}} {{course.teacher.title}} <span>共{{course.lessons}}课时//{{course.lessons===course.pub_lessons?'更新完成':`已更新${course.pub_lessons}`}}</span></p>
                         <ul class="lesson-list">
                             <li v-for="(lesson, key) in course.lesson_list" :key="key">
                                 <span class="lesson-title">{{key+1}} | 第{{key+1}}节：{{lesson.name}}</span>
