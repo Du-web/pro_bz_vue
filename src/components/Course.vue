@@ -26,7 +26,7 @@
                             价格
                         </li>
                     </ul>
-                    <p class="condition-result">共21个课程</p>
+                    <p class="condition-result">共{{total}}个课程</p>
                 </div>
 
             </div>
@@ -54,6 +54,17 @@
                     </div>
                 </div>
             </div>
+            <div>
+                <el-pagination
+                    background
+                    layout="prev, pager, next, sizes"
+                    @current-change="change_page"
+                    @size-change="size_change"
+                    :page-size="filters.size"
+                    :page-sizes="[2,3,5,10]"
+                    :total="total">
+                </el-pagination>
+            </div>
         </div>
         <Footer></Footer>
     </div>
@@ -74,9 +85,12 @@
                 cate_list: [],
                 category: 0,
                 course_list: [],
+                total: 0,
                 filters: {
                     type: 'id',
                     orders: 'desc',
+                    page: 1,
+                    size: 2
                 }
             }
         },
@@ -93,7 +107,11 @@
                 })
             },
             get_all_course(){
-                let filters = {};
+                let filters = {
+                    // 分页属性
+                    page: this.filters.page,
+                    size: this.filters.size,
+                };
                 // 判断分类id是否大于0 则按照点击的id查询
                 if (this.category > 0) {
                     filters.course_category = this.category;
@@ -106,7 +124,9 @@
               this.$axios.get(this.$settings.HOST + 'course/filter_course/', {
                   params:filters
               }).then(res => {
-                  this.course_list = res.data
+                  this.course_list = res.data.results;
+                  console.log(res.data.count);
+                  this.total = res.data.count;
               })
             },
             change_order_type(type){
@@ -126,7 +146,18 @@
                 } else {
                     return "";
                 }
-            }
+            },
+            change_page(page) {
+                this.filters.page = page;
+                this.get_all_course();
+            },
+            // 改变每页显示的课程数量
+            size_change(size) {
+                this.filters.size = size;
+                // 改变条件后需要重新获取data
+                this.filters.page = 1;
+                this.get_all_course();
+            },
         },
         created() {
             this.get_all_category();
