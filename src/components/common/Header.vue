@@ -3,7 +3,7 @@
         <div class="header">
             <div class="content">
                 <div class="logo full-left">
-                    <router-link to="/"><img src="/static/image/logo.svg" alt=""></router-link>
+                    <router-link to="/"><img src="/static/image/logo.png" alt=""></router-link>
                 </div>
                 <ul class="nav full-left">
                     <li v-for="(header, key) in header_list" :key="key">

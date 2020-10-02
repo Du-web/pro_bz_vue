@@ -6,22 +6,25 @@
             <div class="condition">
                 <ul class="cate-list">
                     <li class="title">课程分类:</li>
-                    <li class="this">全部</li>
-                    <li>Python全栈</li>
-                    <li>Java进阶</li>
-                    <li>Php编程</li>
-                    <li>开发工具</li>
-                    <li>GoLang</li>
-                    <li>大数据训练营</li>
-                    <li>知识论坛</li>
+                    <li class="this" @click="category=0" :class="category===0?'this':''">全部</li>
+                    <li v-for="(cate, index) in cate_list" :key="index" @click="category=cate.id"
+                        :class="category===cate.id?'this':''">
+                        {{cate.name}}
+                    </li>
                 </ul>
 
                 <div class="ordering">
                     <ul>
                         <li class="title">筛&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;选:</li>
-                        <li class="default this">默认</li>
-                        <li class="hot this">人气</li>
-                        <li class="price this">价格</li>
+                        <li class="default" @click="change_order_type('id')" :class="change_order_class('id')">
+                            默认
+                        </li>
+                        <li class="hot" @click="change_order_type('students')" :class="change_order_class('students')">
+                            人气
+                        </li>
+                        <li class="price" @click="change_order_type('price')" :class="change_order_class('price')">
+                            价格
+                        </li>
                     </ul>
                     <p class="condition-result">共21个课程</p>
                 </div>
@@ -29,86 +32,23 @@
             </div>
             <!-- 课程列表 -->
             <div class="course-list">
-                <div class="course-item">
+                <div class="course-item" v-for="course in course_list">
                     <div class="course-image">
-                        <img src="/static/image/corejava.png" alt="">
+                        <img :src="course.course_img" alt="">
                     </div>
                     <div class="course-info">
-                        <h3>Java核心技术 <span><img src="/static/image/avatar1.svg" alt="">100人已加入学习</span></h3>
-                        <p class="teather-info">huxz 百知教育教学总监 <span>共84课时/更新完成</span></p>
+                        <h3>{{course.name}} <span><img src="/static/image/avatar1.svg" alt="">{{course.students}}人已加入学习</span></h3>
+                        <p class="teather-info">{{course.teacher.name}} 百知教育教学总监 <span>共{{course.lessons}}课时//{{course.lessons===course.pub_lessons?'更新完成':`已更新${course.pub_lessons}`}}</span></p>
                         <ul class="lesson-list">
-                            <li><span class="lesson-title">01 | 第1节：Hello World</span> <span class="free">免费</span></li>
-                            <li><span class="lesson-title">02 | 第2节：编辑器介绍</span> <span class="free">免费</span></li>
-                            <li><span class="lesson-title">03 | 第3节：第一个java案例</span> <span class="free">免费</span></li>
-                            <li><span class="lesson-title">04 | 第4节：Java的特性</span> <span class="free">免费</span></li>
+                            <li v-for="(lesson, key) in course.lesson_list" :key="key">
+                                <span class="lesson-title">{{key+1}} | 第{{key+1}}节：{{lesson.name}}</span>
+                                <span class="free" v-if="lesson.free_trail">免费</span>
+                            </li>
                         </ul>
                         <div class="pay-box">
                             <span class="discount-type">限时免费</span>
                             <span class="discount-price">￥0.00元</span>
-                            <span class="original-price">原价：9.00元</span>
-                            <span class="buy-now">立即购买</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="course-item">
-                    <div class="course-image">
-                        <img src="/static/image/corejava.png" alt="">
-                    </div>
-                    <div class="course-info">
-                        <h3>Java核心技术 <span><img src="/static/image/avatar1.svg" alt="">100人已加入学习</span></h3>
-                        <p class="teather-info">huxz 百知教育教学总监 <span>共84课时/更新完成</span></p>
-                        <ul class="lesson-list">
-                            <li><span class="lesson-title">01 | 第1节：Hello World</span> <span class="free">免费</span></li>
-                            <li><span class="lesson-title">02 | 第2节：编辑器介绍</span> <span class="free">免费</span></li>
-                            <li><span class="lesson-title">03 | 第3节：第一个java案例</span> <span class="free">免费</span></li>
-                            <li><span class="lesson-title">04 | 第4节：Java的特性</span> <span class="free">免费</span></li>
-                        </ul>
-                        <div class="pay-box">
-                            <span class="discount-type">限时免费</span>
-                            <span class="discount-price">￥0.00元</span>
-                            <span class="original-price">原价：9.00元</span>
-                            <span class="buy-now">立即购买</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="course-item">
-                    <div class="course-image">
-                        <img src="/static/image/python.jpg" alt="">
-                    </div>
-                    <div class="course-info">
-                        <h3>Python全栈开发<span><img src="/static/image/avatar1.svg" alt="">100人已加入学习</span></h3>
-                        <p class="teather-info">suns 百知教育Python教学总监 <span>共89课时/更新完成</span></p>
-                        <ul class="lesson-list">
-                            <li><span class="lesson-title">01 | 第1节：为什么学Python</span> <span class="free">免费</span></li>
-                            <li><span class="lesson-title">01 | 第1节：那些关于Python你不知道的事</span> <span class="free">免费</span></li>
-                            <li><span class="lesson-title">01 | 第1节：踏向编程之路</span> <span class="free">免费</span></li>
-                            <li><span class="lesson-title">01 | 第1节：语言的未来</span> <span class="free">免费</span></li>
-                        </ul>
-                        <div class="pay-box">
-                            <span class="discount-type">限时免费</span>
-                            <span class="discount-price">￥0.00元</span>
-                            <span class="original-price">原价：9.00元</span>
-                            <span class="buy-now">立即购买</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="course-item">
-                    <div class="course-image">
-                        <img src="/static/image/ui_lesson.png" alt="">
-                    </div>
-                    <div class="course-info">
-                        <h3>Python全栈开发 <span><img src="/static/image/avatar1.svg" alt="">100人已加入学习</span></h3>
-                        <p class="teather-info">suns 百知教育Python教学总监 <span>共89课时/更新完成</span></p>
-                        <ul class="lesson-list">
-                            <li><span class="lesson-title">01 | 第1节：为什么学Python</span> <span class="free">免费</span></li>
-                            <li><span class="lesson-title">01 | 第1节：那些关于Python你不知道的事</span> <span class="free">免费</span></li>
-                            <li><span class="lesson-title">01 | 第1节：踏向编程之路</span> <span class="free">免费</span></li>
-                            <li><span class="lesson-title">01 | 第1节：语言的未来</span> <span class="free">免费</span></li>
-                        </ul>
-                        <div class="pay-box">
-                            <span class="discount-type">限时免费</span>
-                            <span class="discount-price">￥0.00元</span>
-                            <span class="original-price">原价：9.00元</span>
+                            <span class="original-price">原价：{{course.price}}元</span>
                             <span class="buy-now">立即购买</span>
                         </div>
                     </div>
@@ -120,8 +60,64 @@
 </template>
 
 <script>
+    import Header from "./common/Header";
+    import Footer from "./common/Footer";
+
     export default {
-        name: "Course"
+        name: "Course",
+        components: {
+            Header,
+            Footer,
+        },
+        data(){
+            return {
+                cate_list: [],
+                category: 0,
+                course_list: [],
+                filters: {
+                    type: 'id',
+                    orders: 'desc',
+                }
+            }
+        },
+        // watch: {
+        //     category(){
+        //
+        //     }
+        // },
+        methods: {
+            get_all_category(){
+                this.$axios.get(this.$settings.HOST + 'course/category/').then(res => {
+                    this.cate_list = res.data;
+                })
+            },
+            get_all_course(){
+              this.$axios.get(this.$settings.HOST + 'course/courses/').then(res => {
+                  this.course_list = res.data
+              })
+            },
+            change_order_type(type){
+                if (this.filters.type === type && this.filters.orders === "asc") {
+                    this.filters.orders = 'desc';
+                } else if (this.filters.type === type && this.filters.orders === "desc") {
+                    this.filters.orders = 'asc';
+                }
+                this.filters.type = type;
+            },
+            change_order_class(type){
+                if (this.filters.type === type && this.filters.orders === "asc") {
+                    return "this asc";
+                } else if (this.filters.type === type && this.filters.orders === "desc") {
+                    return "this desc";
+                } else {
+                    return "";
+                }
+            }
+        },
+        created() {
+            this.get_all_category();
+            this.get_all_course();
+        }
     }
 </script>
 
