@@ -80,11 +80,12 @@
                 }
             }
         },
-        // watch: {
-        //     category(){
-        //
-        //     }
-        // },
+        watch: {
+            // 监听data中的分类id是否改变  一旦改变则重新发起访问请求
+            category(){
+                this.get_all_course();
+            }
+        },
         methods: {
             get_all_category(){
                 this.$axios.get(this.$settings.HOST + 'course/category/').then(res => {
@@ -92,7 +93,19 @@
                 })
             },
             get_all_course(){
-              this.$axios.get(this.$settings.HOST + 'course/courses/').then(res => {
+                let filters = {};
+                // 判断分类id是否大于0 则按照点击的id查询
+                if (this.category > 0) {
+                    filters.course_category = this.category;
+                }
+                if (this.filters.orders === "desc") {
+                    filters.ordering = "-" + this.filters.type
+                } else {
+                    filters.ordering = this.filters.type
+                }
+              this.$axios.get(this.$settings.HOST + 'course/filter_course/', {
+                  params:filters
+              }).then(res => {
                   this.course_list = res.data
               })
             },
@@ -103,6 +116,7 @@
                     this.filters.orders = 'asc';
                 }
                 this.filters.type = type;
+                this.get_all_course();
             },
             change_order_class(type){
                 if (this.filters.type === type && this.filters.orders === "asc") {
