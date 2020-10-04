@@ -4,11 +4,19 @@
         <div class="main">
             <div class="course-info">
                 <div class="wrap-left">
+                    <videoPlayer class="video-player vjs-custom-skin"
+                                 ref="videoPlayer"
+                                 :playsinline="true"
+                                 :options="playerOptions"
+                                 @play="onPlayerPlay($event)"
+                                 @pause="onPlayerPause($event)">
+
+                    </videoPlayer>
 
                 </div>
                 <div class="wrap-right">
-                    <h3 class="course-name">Vue实战大全</h3>
-                    <p class="data">23475人在学&nbsp;&nbsp;&nbsp;&nbsp;课程总时长：45课时/89小时&nbsp;&nbsp;&nbsp;&nbsp;难度：初级</p>
+                    <h3 class="course-name">{{course.name}}</h3>
+                    <p class="data">{{course.students}}人在学&nbsp;&nbsp;&nbsp;&nbsp;课程总时长：{{course.pub_lessons}}课时/89小时&nbsp;&nbsp;&nbsp;&nbsp;难度：{{course.level_name}}</p>
                     <div class="sale-time">
                         <p class="sale-type">限时免费</p>
                         <p class="expire">距离结束：仅剩 110天 13小时 33分 <span class="second">08</span> 秒</p>
@@ -16,14 +24,14 @@
                     <p class="course-price">
                         <span>活动价</span>
                         <span class="discount">¥0.00</span>
-                        <span class="original">¥29.00</span>
+                        <span class="original">¥{{course.price}}</span>
                     </p>
                     <div class="buy">
                         <div class="buy-btn">
                             <button class="buy-now">立即购买</button>
                             <button class="free">免费试学</button>
                         </div>
-                        <div class="add-cart"><img src="/static/image/cart-yellow.svg" alt="">加入购物车</div>
+                        <div class="add-cart"><img src="/static/image/cart.svg" alt="">加入购物车</div>
                     </div>
                 </div>
             </div>
@@ -39,50 +47,24 @@
             <div class="course-content">
                 <div class="course-tab-list">
                     <div class="tab-item" v-if="tabIndex==1">
-                        <p><img alt=""
-                                src=""
-                                width="840"></p>
-                        <p><img alt=""
-                                src=""
-                                width="840"></p>
-                        <p><img alt=""
-                                src=""
-                                width="840"></p>
+                        <div v-html="course.brief_html"></div>
                     </div>
                     <div class="tab-item" v-if="tabIndex==2">
                         <div class="tab-item-title">
                             <p class="chapter">课程章节</p>
-                            <p class="chapter-length">共8章 75个课时</p>
+                            <p class="chapter-length">共{{chapter_list.length}}章 75个课时</p>
                         </div>
-                        <div class="chapter-item">
-                            <p class="chapter-title"><img src="/static/image/1.svg" alt="">第1章·Vue简介</p>
+                        <div class="chapter-item" v-for="chapter in chapter_list" :key="chapter.id">
+                            <p class="chapter-title"><img src="/static/image/1.svg" alt="">第{{chapter.chapter}}章·{{chapter.name}}</p>
                             <ul class="lesson-list">
-                                <li class="lesson-item">
-                                    <p class="name"><span class="index">1-1</span>  Vue基本介绍<span class="free">免费</span>
+                                <li class="lesson-item" v-for="(lesson, index) in chapter.coursesections" :key="index">
+                                    <p class="name" >
+                                        <span class="index">{{chapter.chapter}}-{{index+1}}</span>
+                                        {{lesson.name}}
+                                        <span class="free" v-if="lesson.free_trail">免费</span>
                                     </p>
                                     <p class="time">07:30 <img src="/static/image/chapter-player.svg"></p>
                                     <button class="try">立即试学</button>
-                                </li>
-                                <li class="lesson-item">
-                                    <p class="name"><span class="index">1-2</span> Vue的双向绑定<span class="free">免费</span>
-                                    </p>
-                                    <p class="time">07:30 <img src="/static/image/chapter-player.svg"></p>
-                                    <button class="try">立即试学</button>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="chapter-item">
-                            <p class="chapter-title"><img src="/static/image/12.png" alt="">第2章·Vue发展过程</p>
-                            <ul class="lesson-list">
-                                <li class="lesson-item">
-                                    <p class="name"><span class="index">2-1</span> Vue脚手架</p>
-                                    <p class="time">07:30 <img src="/static/image/chapter-player.svg"></p>
-                                    <button class="try">立即购买</button>
-                                </li>
-                                <li class="lesson-item">
-                                    <p class="name"><span class="index">2-2</span> Vue的路由</p>
-                                    <p class="time">07:30 <img src="/static/image/chapter-player.svg"></p>
-                                    <button class="try">立即购买</button>
                                 </li>
                             </ul>
                         </div>
@@ -99,13 +81,13 @@
                         <h4 class="side-title"><span>授课老师</span></h4>
                         <div class="teacher-content">
                             <div class="cont1">
-                                <img src="/static/image/12.png">
+                                <img :src="course.teacher.image">
                                 <div class="name">
-                                    <p class="teacher-name">小波*李</p>
-                                    <p class="teacher-title">我永远18！</p>
+                                    <p class="teacher-name">{{course.teacher.name}}</p>
+                                    <p class="teacher-title">{{course.teacher.title}}！</p>
                                 </div>
                             </div>
-                            <p class="narrative">技术专家，百知教育金牌讲师，独有的闷骚气质撩到爆炸</p>
+                            <p class="narrative">{{course.teacher.signature}}</p>
                         </div>
                     </div>
                 </div>
@@ -116,13 +98,97 @@
 </template>
 
 <script>
+    import Footer from "./common/Footer";
+    import Header from "./common/Header";
+    import {videoPlayer} from "vue-video-player";
+
     export default {
         name: "CourseDetail",
         data(){
             return {
                 tabIndex: 2,
+                course_id: 0,
+                chapter_list: [],
+                course: {
+                    teacher: {},
+                },
+                playerOptions: {
+                    playbackRates: [0.7, 1.0, 1.5, 2.0], // 播放速度
+                    autoplay: false, //如果true,则自动播放
+                    muted: false, // 默认情况下将会消除任何音频。
+                    loop: false, // 循环播放
+                    preload: 'auto',  // 建议浏览器在<video>加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）
+                    language: 'zh-CN',
+                    aspectRatio: '16:9', // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值。值应该代表一个比例 - 用冒号分隔的两个数字（例如"16:9"或"4:3"）
+                    fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
+                    sources: [{ // 播放资源和资源格式
+                        type: "video/mp4",
+                        src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm" //你的视频地址（必填）
+                    }],
+                    poster: "../static/image/course-cover.jpeg", //视频封面图
+                    width: document.documentElement.clientWidth, // 默认视频全屏时的最大宽度
+                    notSupportedMessage: '此视频暂无法播放，请稍后再试', //允许覆盖Video.js无法播放媒体源时显示的默认信息。
+                }
             }
-        }
+        },
+        methods:{
+            get_course_id (){
+                let course_id = this.$route.params.id;
+                console.log(course_id);
+                if (course_id > 0){
+                    this.course_id = course_id;
+                }else {
+                    let self = this;
+                    this.$alert('页面不存在', {
+                        callback(){
+                            self.$router.go(-1)
+                        }
+                    });
+                    return false
+                }
+                return course_id
+            },
+            get_course_detail(){
+                this.$axios({
+                    url: this.$settings.HOST + 'course/detail/' + this.course_id + '/',
+                    method: 'get',
+                }).then(res => {
+                    this.course = res.data;
+                    // 每个课程要播放的视频
+                    this.playerOptions.sources[0].src = res.data.course_video;
+                    this.playerOptions.poster = res.data.course_img;
+                }).catch(error => {
+                    console.log(error);
+                })
+            },
+            get_course_chapter(){
+                this.$axios({
+                    url:this.$settings.HOST + 'course/chapter/?course=' + this.course_id,
+                    method: 'get',
+                }).then(res => {
+                    console.log(res.data);
+                    this.chapter_list = res.data;
+                }).catch(error => {
+                    console.log(error);
+                })
+            },
+            // 播放视频所需的方法
+            onPlayerPlay(event) {
+            },
+            onPlayerPause(event) {
+            },
+        },
+        created() {
+            this.get_course_id();
+            this.get_course_detail();
+            this.get_course_chapter();
+        },
+        components: {
+            Footer: Footer,
+            Header: Header,
+            videoPlayer,
+        },
+
     }
 </script>
 

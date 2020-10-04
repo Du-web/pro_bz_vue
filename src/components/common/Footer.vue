@@ -2,7 +2,7 @@
     <div class="footer">
         <ul>
             <li v-for="(footer, key) in footer_list" :key="key">
-                <a :href="footer.link">{{footer.title}}</a>
+                <a :href="footer.link" >{{footer.title}}</a>
             </li>
         </ul>
     </div>
@@ -54,6 +54,9 @@
         margin: 0 10px;
         text-align: center;
         font-size: 14px;
+    }
+    .footer ul li a {
+        color: #fff;
     }
 
     .footer ul::after {

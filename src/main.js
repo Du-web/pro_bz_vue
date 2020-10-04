@@ -9,6 +9,11 @@ import "element-ui/lib/theme-chalk/index.css"
 import "../static/css/global.css"
 import '../static/js/gt'
 
+import VideoPlayer from 'vue-video-player'
+
+require('video.js/dist/video-js.css')
+require('vue-video-player/src/custom-theme.css')
+Vue.use(VideoPlayer)
 
 Vue.prototype.$axios = axios;
 Vue.use(Element);
