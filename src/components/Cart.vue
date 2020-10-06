@@ -15,10 +15,7 @@
                     <span class="do_more">操作</span>
                 </div>
                 <div class="cart_course_list">
-                    <CartItem></CartItem>
-                    <CartItem></CartItem>
-                    <CartItem></CartItem>
-                    <CartItem></CartItem>
+                    <CartItem v-for="course in cart_list" :course = course></CartItem>
                 </div>
                 <div class="cart_footer_row">
                     <span class="cart_select"><label> <el-checkbox v-model="checked"></el-checkbox><span>全选</span></label></span>
@@ -39,11 +36,47 @@
 
     export default {
         name: "Cart",
+        data(){
+          return {
+              checked: true,
+              cart_list: [],
+          }
+        },
+        methods: {
+            check_user_login (){
+                let token = sessionStorage.token;
+                if(!token){
+                    this.$router.push('/login');
+                    return false
+                }
+                return token
+            },
+            get_cart() {
+                let cart_length = localStorage.getItem('cart_length')
+                this.$store.commit("add_cart", cart_length)
+                // 获取购物车前判断用户
+                let token = this.check_user_login()
+                this.$axios.get(this.$settings.HOST + "cart/option/", {
+                    headers: {
+                        // 提交购物车时必须携带token  jwt 后必须跟空格
+                        "Authorization": "jwt " + token,
+                    }
+                }).then(res => {
+                    console.log(res);
+                    this.cart_list = res.data;
+                }).catch(error => {
+                    console.log(error);
+                })
+            },
+        },
+        created() {
+          this.get_cart();
+        },
         components: {
             Footer,
             Header,
             CartItem
-        }
+        },
     }
 </script>
 

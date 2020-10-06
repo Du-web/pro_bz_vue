@@ -4,8 +4,8 @@
             <el-checkbox class="my_el_checkbox" v-model="checked"></el-checkbox>
         </div>
         <div class="cart_column column_2">
-            <img src="/static/image/python.jpg" alt="">
-            <span><router-link to="/course/detail/1">DRF从入门到进阶</router-link></span>
+            <img :src="course.course_img" alt="">
+            <span><router-link :to="'/detail/'+course.id">{{course.name}}</router-link></span>
         </div>
         <div class="cart_column column_3">
             <el-select v-model="expire" size="mini" placeholder="请选择购买有效期" class="my_el_select">
@@ -22,7 +22,14 @@
 
 <script>
     export default {
-        name: "CartItem"
+        name: "CartItem",
+        props: ['course'],
+        data() {
+            return {
+                expire: 0,
+                checked: '',
+            }
+        },
     }
 </script>
 

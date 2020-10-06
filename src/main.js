@@ -23,10 +23,13 @@ Vue.config.productionTip = false
 import settings from "./settings";
 Vue.prototype.$settings = settings;
 
+import store from './store/index';
+
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  components: { App },
-  template: '<App/>'
+    el: '#app',
+    router,
+    store,
+    components: { App },
+    template: '<App/>'
 })

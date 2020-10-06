@@ -31,7 +31,7 @@
                             <button class="buy-now">立即购买</button>
                             <button class="free">免费试学</button>
                         </div>
-                        <div class="add-cart"><img src="/static/image/cart.svg" alt="">加入购物车</div>
+                        <div class="add-cart" @click="add_cart"><img src="/static/image/cart.svg" alt="">加入购物车</div>
                     </div>
                 </div>
             </div>
@@ -109,6 +109,7 @@
                 tabIndex: 2,
                 course_id: 0,
                 chapter_list: [],
+                // cart_length: 0,
                 course: {
                     teacher: {},
                 },
@@ -132,6 +133,31 @@
             }
         },
         methods:{
+            check_user_login (){
+                let token = sessionStorage.token;
+                if(!token){
+                    this.$router.push('/login');
+                    return false
+                }
+                return token
+            },
+            add_cart(){
+                let token = this.check_user_login();
+                this.$axios.post(this.$settings.HOST + 'cart/option/', {
+                    course_id: this.course_id
+                }, {
+                    headers: {
+                        // 提交购物车时必须携带token  jwt 后必须跟空格
+                        "Authorization": "jwt " + token,
+                    }
+                }).then(res => {
+                    // this.cart_length =  res.data.cart_length;
+                    localStorage.setItem('cart_length', res.data.cart_length)
+                    this.$store.commit("add_cart", res.data.cart_length)
+                }).catch(error => {
+                    console.log(error);
+                })
+            },
             get_course_id (){
                 let course_id = this.$route.params.id;
                 console.log(course_id);
@@ -149,6 +175,8 @@
                 return course_id
             },
             get_course_detail(){
+                let cart_length = localStorage.getItem('cart_length')
+                this.$store.commit("add_cart", cart_length)
                 this.$axios({
                     url: this.$settings.HOST + 'course/detail/' + this.course_id + '/',
                     method: 'get',

@@ -17,7 +17,7 @@
 
                     <div class="shop-cart full-left">
                         <img src="/static/image/cart.svg" alt="">
-                        <span><router-link to="/cart">购物车</router-link></span>
+                        <span><router-link to="/cart">{{this.$store.state.cart_length}}购物车</router-link></span>
                     </div>
                     <div class="login-box full-left">
                         <router-link to="/login">个人中心</router-link>

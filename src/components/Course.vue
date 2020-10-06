@@ -111,6 +111,8 @@
         },
         methods: {
             get_all_category(){
+                let cart_length = localStorage.getItem('cart_length');
+                this.$store.commit("add_cart", cart_length);
                 this.$axios.get(this.$settings.HOST + 'course/category/').then(res => {
                     this.cate_list = res.data;
                 })
