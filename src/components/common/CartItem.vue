@@ -1,7 +1,7 @@
 <template>
     <div class="cart_item">
         <div class="cart_column column_1">
-            <el-checkbox class="my_el_checkbox" v-model="checked"></el-checkbox>
+            <el-checkbox class="my_el_checkbox" v-model="checked" @click="check_select"></el-checkbox>
         </div>
         <div class="cart_column column_2">
             <img :src="course.course_img" alt="">
@@ -16,7 +16,10 @@
             </el-select>
         </div>
         <div class="cart_column column_4">¥189.0</div>
-        <div class="cart_column column_4">删除</div>
+        <div class="cart_column column_4" >
+            <el-button type="danger" @click="del_course(course.id)">删除</el-button>
+
+        </div>
     </div>
 </template>
 
@@ -28,6 +31,43 @@
             return {
                 expire: 0,
                 checked: '',
+                cart_list:[],
+            }
+        },
+        methods:{
+            check_user_login (){
+                let token = sessionStorage.token;
+                if(!token){
+                    this.$router.push('/login');
+                    return false
+                }
+                return token
+            },
+            check_select(){
+                alert(111)
+                this.checked = !this.checked;
+                console.log(this.checked);
+            },
+            del_course(id){
+                let token = this.check_user_login();
+                this.$axios({
+                    url:this.$settings.HOST + "cart/delete/",
+                    method: 'get',
+                    params: {
+                        course_id: id,
+                    },
+                    headers: {
+                        // 提交购物车时必须携带token  jwt 后必须跟空格
+                        "Authorization": "jwt " + token,
+                    }
+                }).then(res => {
+                    // console.log(res);
+                    this.cart_list = res.data;
+                    localStorage.setItem('cart_length', res.data.length)
+                    alert('删除成功');
+                }).catch(error => {
+                    console.log(error);
+                })
             }
         },
     }

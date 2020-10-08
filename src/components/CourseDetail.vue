@@ -154,6 +154,7 @@
                     // this.cart_length =  res.data.cart_length;
                     localStorage.setItem('cart_length', res.data.cart_length)
                     this.$store.commit("add_cart", res.data.cart_length)
+                    alert('添加成功');
                 }).catch(error => {
                     console.log(error);
                 })

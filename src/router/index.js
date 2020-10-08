@@ -11,6 +11,7 @@ import Cart from "../components/Cart";
 Vue.use(Router)
 
 export default new Router({
+    mode: 'history',
     routes: [
         {path: '/', component: Index},
         {path: '/index', component: Index},
