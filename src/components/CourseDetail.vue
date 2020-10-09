@@ -17,13 +17,13 @@
                 <div class="wrap-right">
                     <h3 class="course-name">{{course.name}}</h3>
                     <p class="data">{{course.students}}人在学&nbsp;&nbsp;&nbsp;&nbsp;课程总时长：{{course.pub_lessons}}课时/89小时&nbsp;&nbsp;&nbsp;&nbsp;难度：{{course.level_name}}</p>
-                    <div class="sale-time">
-                        <p class="sale-type">限时免费</p>
+                    <div class="sale-time" v-if="course.discount_name">
+                        <p class="sale-type">{{course.discount_name}}</p>
                         <p class="expire">距离结束：仅剩 110天 13小时 33分 <span class="second">08</span> 秒</p>
                     </div>
                     <p class="course-price">
                         <span>活动价</span>
-                        <span class="discount">¥0.00</span>
+                        <span class="discount">¥{{course.real_price}}</span>
                         <span class="original">¥{{course.price}}</span>
                     </p>
                     <div class="buy">
