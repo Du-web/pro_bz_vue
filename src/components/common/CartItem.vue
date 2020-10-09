@@ -1,7 +1,8 @@
 <template>
     <div class="cart_item">
         <div class="cart_column column_1">
-            <el-checkbox class="my_el_checkbox" v-model="checked" @click="check_select"></el-checkbox>
+<!--            <el-checkbox class="my_el_checkbox" v-model="checked" @click="check_select"></el-checkbox>-->
+            <input type="checkbox" class="my_el_checkbox" v-model="checked" @click="check_select(course.id)" >
         </div>
         <div class="cart_column column_2">
             <img :src="course.course_img" alt="">
@@ -15,7 +16,7 @@
                 <el-option label="永久有效" value="10000" key="10000"></el-option>
             </el-select>
         </div>
-        <div class="cart_column column_4">¥189.0</div>
+        <div class="cart_column column_4">{{course.price}}</div>
         <div class="cart_column column_4" >
             <el-button type="danger" @click="del_course(course.id)">删除</el-button>
 
@@ -30,7 +31,7 @@
         data() {
             return {
                 expire: 0,
-                checked: '',
+                checked: this.course.selected,
                 cart_list:[],
             }
         },
@@ -43,30 +44,61 @@
                 }
                 return token
             },
-            check_select(){
-                alert(111)
-                this.checked = !this.checked;
-                console.log(this.checked);
-            },
-            del_course(id){
+            check_select(id){
                 let token = this.check_user_login();
+                this.checked = !this.checked;
                 this.$axios({
-                    url:this.$settings.HOST + "cart/delete/",
-                    method: 'get',
-                    params: {
+                    url: this.$settings.HOST + 'cart/option/',
+                    method: 'post',
+                    data: {
                         course_id: id,
+                        select: this.checked
                     },
                     headers: {
                         // 提交购物车时必须携带token  jwt 后必须跟空格
                         "Authorization": "jwt " + token,
                     }
                 }).then(res => {
-                    // console.log(res);
-                    this.cart_list = res.data;
-                    localStorage.setItem('cart_length', res.data.length)
-                    alert('删除成功');
+                    console.log(res);
                 }).catch(error => {
                     console.log(error);
+                })
+            },
+            del_course(id){
+                let token = this.check_user_login();
+                // this.$axios({
+                //     url:this.$settings.HOST + "cart/delete/",
+                //     method: 'get',
+                //     params: {
+                //         course_id: id,
+                //     },
+                //     headers: {
+                //         // 提交购物车时必须携带token  jwt 后必须跟空格
+                //         "Authorization": "jwt " + token,
+                //     }
+                // }).then(res => {
+                //     // console.log(res, 22222);
+                //     this.cart_list = res.data;
+                //     localStorage.setItem('cart_length', res.data.length)
+                //     alert('删除成功');
+                // }).catch(error => {
+                //     console.log(error);
+                // })
+                this.$axios.delete(this.$settings.HOST + 'cart/option/', {
+                    params: {
+                        "course_id": this.course.id,
+                    },
+                    headers: {
+                        "Authorization": "jwt " + token,
+                    }
+                }).then(response => {
+                    this.$message.success(response.data.message)
+
+                    // 当自组价删除商品时需要通知父组件来执行对应的方法  可以向父组件提交事件
+                    this.$emit("del_course");
+
+                }).catch(error => {
+                    this.$message.success(error.data.message)
                 })
             }
         },

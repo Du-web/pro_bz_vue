@@ -15,10 +15,11 @@
                     <span class="do_more">操作</span>
                 </div>
                 <div class="cart_course_list">
-                    <CartItem v-for="course in cart_list" :course = course></CartItem>
+                    <CartItem v-for="(course, key) in cart_list" :course = course
+                              @del_course="del_cart(key)"></CartItem>
                 </div>
                 <div class="cart_footer_row">
-                    <span class="cart_select"><label> <el-checkbox v-model="checked"></el-checkbox> <span>全选</span> </label></span>
+                    <span class="cart_select"><input type="checkbox" v-model="checked" @click="all_checked"> &nbsp;&nbsp;<span>全选</span></span>
                     <span class="cart_delete"><i class="el-icon-delete"></i> <span>删除</span></span>
                     <span class="goto_pay">去结算</span>
                     <span class="cart_total">总计：¥0.0</span>
@@ -38,15 +39,15 @@
         name: "Cart",
         data(){
           return {
-              checked: true,
+              checked: '',
               cart_list: [],
           }
         },
-        watch: {
-            cart_list(){
-                this.get_cart();
-            }
-        },
+        // watch: {
+        //     cart_list(){
+        //         this.get_cart();
+        //     }
+        // },
         methods: {
             check_user_login (){
                 let token = sessionStorage.token;
@@ -55,6 +56,9 @@
                     return false
                 }
                 return token
+            },
+            all_checked(){
+                this.checked = !this.checked;
             },
             get_cart() {
                 let cart_length = localStorage.getItem('cart_length')
@@ -67,11 +71,18 @@
                         "Authorization": "jwt " + token,
                     }
                 }).then(res => {
-                    console.log(res);
+                    // console.log(res, 11111);
                     this.cart_list = res.data;
                 }).catch(error => {
                     console.log(error);
                 })
+            },
+            del_cart(key) {
+                // 从购物车中移除掉某个课程
+                this.cart_list.splice(key, 1);
+                // 删除后向store提交动作来修改购物车总数量
+                localStorage.setItem('cart_length', this.cart_list.length)
+                this.$store.commit("add_cart", this.cart_list.length)
             },
         },
         created() {
@@ -165,6 +176,12 @@
         margin-left: -7px;
         font-size: 18px;
         color: #666;
+
+    }
+
+    .cart_footer_row .cart_select input {
+        width: 16px;
+        height: 16px;
     }
 
     .cart_footer_row .cart_delete {
