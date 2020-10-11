@@ -21,7 +21,7 @@
                 <div class="cart_footer_row">
                     <span class="cart_select"><input type="checkbox" v-model="checked" @click="all_checked" :checkall="checked"> &nbsp;&nbsp;<span>全选</span></span>
                     <span class="cart_delete"><i class="el-icon-delete"></i> <span>删除</span></span>
-                    <span class="goto_pay">去结算</span>
+                    <router-link class="goto_pay" to="/order">去结算</router-link>
                     <span class="cart_total">总计：¥{{total_price.toFixed(2)}}</span>
                 </div>
             </div>
