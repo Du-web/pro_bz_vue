@@ -19,7 +19,7 @@
                     <p class="data">{{course.students}}人在学&nbsp;&nbsp;&nbsp;&nbsp;课程总时长：{{course.pub_lessons}}课时/89小时&nbsp;&nbsp;&nbsp;&nbsp;难度：{{course.level_name}}</p>
                     <div class="sale-time" v-if="course.discount_name">
                         <p class="sale-type">{{course.discount_name}}</p>
-                        <p class="expire">距离结束：仅剩 110天 13小时 33分 <span class="second">08</span> 秒</p>
+                        <p class="expire">距离结束：仅剩 {{day}}天 {{hou}}小时 {{min}}分 <span class="second">{{sec}}</span> 秒</p>
                     </div>
                     <p class="course-price">
                         <span>活动价</span>
@@ -88,6 +88,7 @@
                                 </div>
                             </div>
                             <p class="narrative">{{course.teacher.signature}}</p>
+                            {{endTime}}
                         </div>
                     </div>
                 </div>
@@ -109,6 +110,12 @@
                 tabIndex: 2,
                 course_id: 0,
                 chapter_list: [],
+                day: 0,
+                hou: 0,
+                min: 0,
+                sec: 0,
+                endTime: '',
+
                 // cart_length: 0,
                 course: {
                     teacher: {},
@@ -183,6 +190,11 @@
                     method: 'get',
                 }).then(res => {
                     this.course = res.data;
+                    // let date = new Date(res.data.discount_time);
+                    // let endtime= date.getFullYear() + '-' + this.checkTime(date.getMonth() + 1) + '-' + this.checkTime(date.getDay())
+                    //
+                    // this.endTime = endtime.replace(/-/g, '/')
+                    // console.log(this.endTime, typeof this.endTime);
                     // 每个课程要播放的视频
                     this.playerOptions.sources[0].src = res.data.course_video;
                     this.playerOptions.poster = res.data.course_img;
@@ -195,7 +207,7 @@
                     url:this.$settings.HOST + 'course/chapter/?course=' + this.course_id,
                     method: 'get',
                 }).then(res => {
-                    console.log(res.data);
+                    // console.log(res.data);
                     this.chapter_list = res.data;
                 }).catch(error => {
                     console.log(error);
@@ -206,11 +218,33 @@
             },
             onPlayerPause(event) {
             },
+            time(){
+                let self = this;
+                setInterval(function timestampToTime(){
+                    let data = new Date('2020-11-11').getTime() - new Date().getTime();
+                    if (data > 0){
+                        let time = data / 1000;
+                        self.day = parseInt(time / 60 / 60 / 24);
+                        self.hou = parseInt(time / 60 / 60 % 24);
+                        self.min = parseInt(time / 60 % 60);
+                        self.sec = parseInt(time % 60);
+                    }
+                },1000)
+            },
+            // checkTime(i) {
+            //     if (i < 10) {
+            //         i = '0' + i
+            //     }
+            //     return i
+            // },
         },
         created() {
             this.get_course_id();
             this.get_course_detail();
             this.get_course_chapter();
+            // console.log(this.endTime, 111111111);
+            this.time();;
+
         },
         components: {
             Footer: Footer,

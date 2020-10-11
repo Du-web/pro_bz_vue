@@ -16,13 +16,13 @@
                 </div>
                 <div class="cart_course_list">
                     <CartItem v-for="(course, key) in cart_list" :course = course
-                              @del_course="del_cart(key)"></CartItem>
+                              @del_course="del_cart(key)" @change_select="cart_total_price"></CartItem>
                 </div>
                 <div class="cart_footer_row">
-                    <span class="cart_select"><input type="checkbox" v-model="checked" @click="all_checked"> &nbsp;&nbsp;<span>全选</span></span>
+                    <span class="cart_select"><input type="checkbox" v-model="checked" @click="all_checked" :checkall="checked"> &nbsp;&nbsp;<span>全选</span></span>
                     <span class="cart_delete"><i class="el-icon-delete"></i> <span>删除</span></span>
                     <span class="goto_pay">去结算</span>
-                    <span class="cart_total">总计：¥0.0</span>
+                    <span class="cart_total">总计：¥{{total_price.toFixed(2)}}</span>
                 </div>
             </div>
         </div>
@@ -39,8 +39,9 @@
         name: "Cart",
         data(){
           return {
-              checked: '',
+              checked: false,
               cart_list: [],
+              total_price: 0,
           }
         },
         // watch: {
@@ -84,9 +85,22 @@
                 localStorage.setItem('cart_length', this.cart_list.length)
                 this.$store.commit("add_cart", this.cart_list.length)
             },
+            // 计算购物车商品总价
+            cart_total_price() {
+                let total = 0;
+                this.cart_list.forEach((course, key) => {
+                    // 判断商品是否选中了，如果商品选中了则计入总价  没选中则不计入
+                    if (course.selected) {
+                        total += parseFloat(course.real_price)
+                    }
+                    console.log(total);
+                    this.total_price = total;
+                })
+            },
         },
         created() {
           this.get_cart();
+          this.cart_total_price();
         },
         components: {
             Footer,
