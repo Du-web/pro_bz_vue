@@ -19,9 +19,15 @@
                               @del_course="del_cart(key)" @change_select="cart_total_price"></CartItem>
                 </div>
                 <div class="cart_footer_row">
-                    <span class="cart_select"><input type="checkbox" v-model="checked" @click="all_checked" :checkall="checked"> &nbsp;&nbsp;<span>全选</span></span>
+                    <span class="cart_select">
+                        <label>
+                            <el-checkbox v-model="checked"></el-checkbox> &nbsp;
+                            <span>全选</span>
+                        </label>
+                    </span>
                     <span class="cart_delete"><i class="el-icon-delete"></i> <span>删除</span></span>
-                    <router-link class="goto_pay" to="/order">去结算</router-link>
+                    <span class="goto_pay" @click="pay_order">去结算</span>
+<!--                    <router-link class="goto_pay" to="/order">去结算</router-link>-->
                     <span class="cart_total">总计：¥{{total_price.toFixed(2)}}</span>
                 </div>
             </div>
@@ -97,6 +103,18 @@
                     this.total_price = total;
                 })
             },
+            pay_order(){
+                let count = 0
+                this.cart_list.forEach(course => {
+                    if (course.selected) {
+                        count += 1
+                    }
+                })
+                let cart_length = localStorage.getItem('cart_length') - count
+                localStorage.setItem('cart_length', cart_length);
+                this.$store.commit("add_cart", cart_length);
+                this.$router.push('/order');
+            }
         },
         created() {
           this.get_cart();

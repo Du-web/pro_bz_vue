@@ -76,6 +76,9 @@
                     console.log(response.data);
                     this.course_list = response.data.course_list;
                     this.total_price = response.data.total_price;
+                    // length = localStorage.getItem('cart_length') - response.data.course_list.length
+                    // localStorage.setItem('cart_length', length)
+                    // this.$store.commit("add_cart", length)
 
                 }).catch(error => {
                     console.log(error);
@@ -96,6 +99,7 @@
                     console.log(response.data);
 
                     this.$message.success("正在支付，请稍等~~~")
+
 
                 }).catch(error => {
                     console.log(error);
