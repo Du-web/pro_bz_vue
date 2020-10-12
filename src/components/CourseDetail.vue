@@ -88,7 +88,6 @@
                                 </div>
                             </div>
                             <p class="narrative">{{course.teacher.signature}}</p>
-                            {{endTime}}
                         </div>
                     </div>
                 </div>
@@ -114,7 +113,6 @@
                 hou: 0,
                 min: 0,
                 sec: 0,
-                endTime: '',
 
                 // cart_length: 0,
                 course: {
@@ -161,9 +159,10 @@
                     // this.cart_length =  res.data.cart_length;
                     localStorage.setItem('cart_length', res.data.cart_length)
                     this.$store.commit("add_cart", res.data.cart_length)
-                    alert('添加成功');
+                    this.$message.success('添加成功')
                 }).catch(error => {
                     console.log(error);
+                    this.$message.error(error.message)
                 })
             },
             get_course_id (){
@@ -190,16 +189,13 @@
                     method: 'get',
                 }).then(res => {
                     this.course = res.data;
-                    // let date = new Date(res.data.discount_time);
-                    // let endtime= date.getFullYear() + '-' + this.checkTime(date.getMonth() + 1) + '-' + this.checkTime(date.getDay())
-                    //
-                    // this.endTime = endtime.replace(/-/g, '/')
-                    // console.log(this.endTime, typeof this.endTime);
                     // 每个课程要播放的视频
                     this.playerOptions.sources[0].src = res.data.course_video;
                     this.playerOptions.poster = res.data.course_img;
+                    this.time();
                 }).catch(error => {
                     console.log(error);
+                    this.$message.error(error.message)
                 })
             },
             get_course_chapter(){
@@ -211,6 +207,7 @@
                     this.chapter_list = res.data;
                 }).catch(error => {
                     console.log(error);
+                    this.$message.error(error.message)
                 })
             },
             // 播放视频所需的方法
@@ -221,29 +218,21 @@
             time(){
                 let self = this;
                 setInterval(function timestampToTime(){
-                    let data = new Date('2020-11-11').getTime() - new Date().getTime();
+                    let data = self.course.discount_time - new Date().getTime()/1000;
                     if (data > 0){
-                        let time = data / 1000;
-                        self.day = parseInt(time / 60 / 60 / 24);
-                        self.hou = parseInt(time / 60 / 60 % 24);
-                        self.min = parseInt(time / 60 % 60);
-                        self.sec = parseInt(time % 60);
+                        self.day = parseInt(data / 60 / 60 / 24);
+                        self.hou = parseInt(data / 60 / 60 % 24);
+                        self.min = parseInt(data / 60 % 60);
+                        self.sec = parseInt(data % 60);
                     }
                 },1000)
             },
-            // checkTime(i) {
-            //     if (i < 10) {
-            //         i = '0' + i
-            //     }
-            //     return i
-            // },
         },
         created() {
             this.get_course_id();
             this.get_course_detail();
             this.get_course_chapter();
-            // console.log(this.endTime, 111111111);
-            this.time();;
+
 
         },
         components: {

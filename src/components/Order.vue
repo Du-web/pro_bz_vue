@@ -34,7 +34,7 @@
                         <span class="alipay wechat"><img src="../../static/image/wechat.png" alt=""></span>
                     </el-col>
                     <el-col :span="8" class="count">实付款： <span>¥{{total_price}}</span></el-col>
-                    <el-col :span="4" class="cart-pay" @click="payOrder"><span>支付宝支付</span></el-col>
+                    <el-col :span="4" class="cart-pay"><span @click="payOrder">支付宝支付</span></el-col>
                 </el-row>
             </div>
         </div>
@@ -52,7 +52,7 @@
             return {
                 course_list: [],
                 total_price: 0,
-                pay_type: 1,
+                pay_type: 1, //支付方式
             }
         },
         methods:{
