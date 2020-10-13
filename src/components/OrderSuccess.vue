@@ -13,14 +13,12 @@
                 <p class="info1"><b>付款时间：</b><span>{{pay_time}}</span></p>
                 <p class="info2"><b>付款金额：</b><span>￥{{real_price}}元</span></p>
                 <p class="info3"><b>课程信息：</b>
-                    <span v-for="course in course_list">
-                        <router-link :to="'/detail/'+course.course.id">
-                            <img :src="course.course.course_img" alt="">
-                        </router-link>
-                        <router-link :to="'/detail/'+course.course.id"><h3>{{course.course.name}}</h3></router-link>
+                    <p v-for="course in course_list">
+                        <span>
+                            <router-link :to="'/detail/'+course.course.id"><h3>{{course.course.name}}</h3></router-link>
+                        </span>
                         <span v-if="end_time">距离有效期结束：仅剩 {{day}}天 {{hou}}小时 {{min}}分 {{sec}}秒</span>
-                    </span>
-                    <br>
+                    </p>
                 </p>
             </div>
             <div class="wechat-code">
@@ -63,7 +61,7 @@
                     this.end_time = res.data.end_time;
                     this.time();
                 }).catch(error => {
-                    this.$message.success(error.message);
+                    this.$message.error(error.message);
                 })
             },
             time(){
