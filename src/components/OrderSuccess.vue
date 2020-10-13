@@ -5,14 +5,23 @@
             <div class="title">
                 <!--          <img src="../../static/images/right.svg" alt="">-->
                 <div class="success-tips">
-                    <p class="tips1">您已成功购买 1 门课程！</p>
+                    <p class="tips1">您已成功购买 {{course_list.length}} 门课程！</p>
                     <p class="tips2">你还可以加入QQ群 <span>11111111</span> 学习交流</p>
                 </div>
             </div>
             <div class="order-info">
-                <p class="info1"><b>付款时间：</b><span>2019/04/02 10:27</span></p>
-                <p class="info2"><b>付款金额：</b><span>￥199.9元</span></p>
-                <p class="info3"><b>课程信息：</b><span v-for="course in course_list">大神之路</span></p>
+                <p class="info1"><b>付款时间：</b><span>{{pay_time}}</span></p>
+                <p class="info2"><b>付款金额：</b><span>￥{{real_price}}元</span></p>
+                <p class="info3"><b>课程信息：</b>
+                    <span v-for="course in course_list">
+                        <router-link :to="'/detail/'+course.course.id">
+                            <img :src="course.course.course_img" alt="">
+                        </router-link>
+                        <router-link :to="'/detail/'+course.course.id"><h3>{{course.course.name}}</h3></router-link>
+                        <span v-if="end_time">距离有效期结束：仅剩 {{day}}天 {{hou}}小时 {{min}}分 {{sec}}秒</span>
+                    </span>
+                    <br>
+                </p>
             </div>
             <div class="wechat-code">
             </div>
@@ -30,6 +39,49 @@
 
     export default {
         name: "OrderSuccess",
+        data(){
+            return {
+                course_list: [],
+                pay_time: 0,
+                real_price: 0,
+                end_time: 0,
+                day: 0,
+                hou: 0,
+                min: 0,
+                sec: 0,
+            }
+        },
+        methods: {
+            // 携带参数发送到后台  验证支付结果
+            AliPayResult() {
+                this.$axios.get(this.$settings.HOST + "payment/result/" + location.search).then(res => {
+                    console.log(res);
+                    this.$message.success(res.data.message);
+                    this.course_list = res.data.course_list;
+                    this.pay_time = res.data.pay_time;
+                    this.real_price = res.data.real_price;
+                    this.end_time = res.data.end_time;
+                    this.time();
+                }).catch(error => {
+                    this.$message.success(error.message);
+                })
+            },
+            time(){
+                let self = this;
+                setInterval(function timestampToTime(){
+                    let data = self.end_time - new Date().getTime()/1000;
+                    if (data > 0){
+                        self.day = parseInt(data / 60 / 60 / 24);
+                        self.hou = parseInt(data / 60 / 60 % 24);
+                        self.min = parseInt(data / 60 % 60);
+                        self.sec = parseInt(data % 60);
+                    }
+                },1000)
+            },
+        },
+        created() {
+            this.AliPayResult();
+        },
         components: {
             Footer, Header
         }
@@ -153,5 +205,9 @@
         border-radius: 6px;
         font-size: 16px;
         color: #fff;
+    }
+    .info3 img {
+        width: 175px;
+        height: 115px;
     }
 </style>

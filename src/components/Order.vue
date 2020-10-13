@@ -76,9 +76,6 @@
                     console.log(response.data);
                     this.course_list = response.data.course_list;
                     this.total_price = response.data.total_price;
-                    // length = localStorage.getItem('cart_length') - response.data.course_list.length
-                    // localStorage.setItem('cart_length', length)
-                    // this.$store.commit("add_cart", length)
 
                 }).catch(error => {
                     console.log(error);
@@ -96,10 +93,18 @@
                         "Authorization": "jwt " + token,
                     }
                 }).then(response => {
-                    console.log(response.data);
-
-                    this.$message.success("正在支付，请稍等~~~")
-
+                    console.log(response);
+                    this.$message.success("正在跳转支付页面，请稍等~~~")
+                    this.$axios.get(this.$settings.HOST + 'payment/pay/', {
+                        params: {
+                            order_number: response.data.order_number,
+                        }
+                    }).then(res => {
+                        // 返回值是一个支付的链接 跳转到该链接
+                        location.href = res.data;
+                    }).catch(error => {
+                        this.$message.error(error.message);
+                    })
 
                 }).catch(error => {
                     console.log(error);
