@@ -156,8 +156,6 @@
                         "Authorization": "jwt " + token,
                     }
                 }).then(res => {
-                    // this.cart_length =  res.data.cart_length;
-                    localStorage.setItem('cart_length', res.data.cart_length)
                     this.$store.commit("add_cart", res.data.cart_length)
                     this.$message.success('添加成功')
                 }).catch(error => {
@@ -167,7 +165,7 @@
             },
             get_course_id (){
                 let course_id = this.$route.params.id;
-                console.log(course_id);
+                // console.log(course_id);
                 if (course_id > 0){
                     this.course_id = course_id;
                 }else {
@@ -182,8 +180,7 @@
                 return course_id
             },
             get_course_detail(){
-                let cart_length = localStorage.getItem('cart_length')
-                this.$store.commit("add_cart", cart_length)
+
                 this.$axios({
                     url: this.$settings.HOST + 'course/detail/' + this.course_id + '/',
                     method: 'get',

@@ -68,8 +68,6 @@
                 this.checked = !this.checked;
             },
             get_cart() {
-                let cart_length = localStorage.getItem('cart_length')
-                this.$store.commit("add_cart", cart_length)
                 // 获取购物车前判断用户
                 let token = this.check_user_login()
                 this.$axios.get(this.$settings.HOST + "cart/option/", {
@@ -88,7 +86,6 @@
                 // 从购物车中移除掉某个课程
                 this.cart_list.splice(key, 1);
                 // 删除后向store提交动作来修改购物车总数量
-                localStorage.setItem('cart_length', this.cart_list.length)
                 this.$store.commit("add_cart", this.cart_list.length)
             },
             // 计算购物车商品总价

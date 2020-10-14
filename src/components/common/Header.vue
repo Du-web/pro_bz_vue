@@ -63,12 +63,34 @@
             },
             get_user(){
                 this.token = sessionStorage.token;
-
-            }
+            },
+            check_user_login (){
+                let token = sessionStorage.token;
+                if(!token){
+                    this.$router.push('/login');
+                    return false
+                }
+                return token
+            },
+            get_lenght(){
+                let token = this.check_user_login();
+                this.$axios.get(this.$settings.HOST + 'cart/option/', {
+                    headers: {
+                        // 提交购物车时必须携带token  jwt 后必须跟空格
+                        "Authorization": "jwt " + token,
+                    }
+                }).then(res => {
+                    this.$store.commit("add_cart", res.data.length)
+                }).catch(error => {
+                    console.log(error);
+                    this.$message.error(error.message)
+                })
+            },
         },
         created() {
-            this.get_all_header()
-            this.get_user()
+            this.get_all_header();
+            this.get_user();
+            this.get_lenght();
         }
     }
 </script>

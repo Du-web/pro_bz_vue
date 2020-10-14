@@ -27,7 +27,7 @@
                 </ul>
                 <div class="my-order-item" v-for="order in order_list">
                     <div class="user-data-header">
-                        <span class="order-time">{{order.pay_time}}</span>
+                        <span class="order-time">{{order.order_time}}</span>
                         <span class="order-num">订单号：
                         <span class="my-older-number">{{order.order_number}}</span>
                     </span>

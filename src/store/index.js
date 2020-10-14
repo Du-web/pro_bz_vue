@@ -15,4 +15,10 @@ export default new Vuex.Store({
             state.cart_length = data;
         },
     },
+    // getters: {
+    //     result: function (state) {
+    //         return state.cart_length
+    //
+    //     }
+    // }
 })
