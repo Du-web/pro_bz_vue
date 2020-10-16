@@ -13,7 +13,11 @@
                     <div id="geetest"></div>
                     <div class="sms-box">
                         <input v-model="code" type="text" maxlength="6" placeholder="输入验证码" class="user">
-                        <div class="sms-btn" @click="send_msg">{{sms_text}}</div>
+                        <div class="sms-btn" >
+                            <span v-show="show" @click="send_msg">{{sms_text}}</span>
+                            <span v-show="!show" class="count">{{count}} s</span>
+
+                        </div>
                     </div>
                     <button class="register_btn" @click="user_register">注册</button>
                     <p class="go_login">已有账号
@@ -37,6 +41,9 @@
                 span_phone: '',
                 span_pwd: '',
                 sms_text: '请输入验证码',
+                show: true,
+                count: '',
+                timer: null,
             }
         },
         methods: {
@@ -100,6 +107,7 @@
                     this.$alert("手机号格式有误", "警告");
                     return false;
                 }
+                let self = this
                 this.$axios({
                     url: this.$settings.HOST + 'user/sms/',
                     method: 'get',
@@ -107,7 +115,6 @@
                         phone: this.phone
                     }
                 }).then(res => {
-                    console.log(res);
                     // 倒计时
 
                     //成功提示
@@ -117,11 +124,28 @@
                         showClose: true,
                         duration: 1000,
                     })
+                    self.getCode();
                 }).catch(error => {
                     console.log(error);
                     this.$message.error("当前手机号已经发送过短信");
                 })
             },
+            getCode(){
+                const TIME_COUNT = 60;
+                if (!this.timer) {
+                    this.count = TIME_COUNT;
+                    this.show = false;
+                    this.timer = setInterval(() => {
+                        if (this.count > 0 && this.count <= TIME_COUNT) {
+                            this.count--;
+                        } else {
+                            this.show = true;
+                            clearInterval(this.timer);
+                            this.timer = null;
+                        }
+                    }, 1000)
+                }
+            }
 
         }
     }

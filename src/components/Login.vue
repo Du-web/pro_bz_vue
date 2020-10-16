@@ -30,7 +30,11 @@
                 <div class="inp" v-show="isShow" >
                     <input type="text" placeholder="手机号码" class="user" v-model="phone">
                     <input type="text" class="pwd" placeholder="短信验证码" v-model="code">
-                    <button id="get_code" class="btn btn-primary" @click="get_code">获取验证码</button>
+                    <button id="get_code" class="btn btn-primary">
+                        <span v-show="show" @click="get_code">获取验证码</span>
+                        <span v-show="!show" class="count">{{count}} s</span>
+
+                    </button>
                     <button class="login_btn" @click="get_login">登录</button>
                     <span class="go_login">没有账号
                     <router-link to="/register">立即注册</router-link>
@@ -53,6 +57,9 @@
                 remember_me: false,
                 isShow: false,
                 isDel: true,
+                show: true,
+                count: '',
+                timer: null,
             }
         },
         methods: {
@@ -80,6 +87,7 @@
                     }, this.handlerPopup);
                 }).catch(error => {
                     console.log(error);
+                    this.$message.error(error.data.message);
                 })
             },
             // 请求验证码的回调函数  完成验证码的验证
@@ -101,6 +109,7 @@
                         self.user_login();
                     }).catch(error => {
                         console.log(error);
+                        this.$message.error(error.data.message);
                     });
                 });
 
@@ -117,8 +126,6 @@
                     data: {
                         username: this.username,
                         password: this.password,
-                        phone: this.phone,
-                        code: this.code
                      }
                 }).then(response => {
                     console.log(response);
@@ -177,45 +184,67 @@
                 this.isDel = true;
             },
             get_code(){
-                // if (!/1[356789]\d{9}/.test(this.phone)) {
-                //     this.$alert("手机号格式有误", "警告");
-                //     return false;
-                // }
-                // this.$axios({
-                //     url: this.$settings.HOST + "user/sms/",
-                //     method: "get",
-                //     params: {
-                //         phone: this.phone,
-                //     }
-                // }).then(response => {
-                //     console.log(response);
-                //
-                //     // 成功提示
-                //     this.$message.success({
-                //         message: '短信已经发送到手机，请注意查收',
-                //         type: 'success',
-                //         showClose: true,
-                //         duration: 1000,
-                //     })
-                //
-                // }).catch(error => {
-                //     console.log(error);
-                //     this.$message.error("当前手机号已经发送过短信")
-                // })
+                if (!/1[356789]\d{9}/.test(this.phone)) {
+                    this.$alert("手机号格式有误", "警告");
+                    return false;
+                }
+                let self = this
+                this.$axios({
+                    url: this.$settings.HOST + "user/sms/",
+                    method: "get",
+                    params: {
+                        phone: this.phone,
+                    }
+                }).then(response => {
+                    console.log(response);
+                    self.getCode();
+                    // 成功提示
+                    this.$message.success({
+                        message: '短信已经发送到手机，请注意查收',
+                        type: 'success',
+                        showClose: true,
+                        duration: 1000,
+                    })
+
+                }).catch(error => {
+                    console.log(error);
+                    this.$message.error("当前手机号已经发送过短信")
+                })
             },
             get_login(){
-                // this.$axios({
-                //     url: this.$settings.HOST + "user/getuser/",
-                //     method: "get",
-                //     params: {
-                //         phone: this.phone,
-                //     }
-                // }).then(response => {
-                //     console.log(response);
-                // }).catch(error => {
-                //     console.log(error);
-                // })
+                let self = this
+                this.$axios({
+                    url: this.$settings.HOST + "user/getuser/",
+                    method: "post",
+                    data: {
+                        phone: this.phone,
+                        code: this.code
+                    }
+                }).then(response => {
+                    console.log(response);
+                    sessionStorage.setItem("token", response.data.token);
+                    this.$router.push("/");
+                }).catch(error => {
+                    console.log(error);
+                    this.$message.error(error.data.message);
+                })
             },
+            getCode(){
+                const TIME_COUNT = 60;
+                if (!this.timer) {
+                    this.count = TIME_COUNT;
+                    this.show = false;
+                    this.timer = setInterval(() => {
+                        if (this.count > 0 && this.count <= TIME_COUNT) {
+                            this.count--;
+                        } else {
+                            this.show = true;
+                            clearInterval(this.timer);
+                            this.timer = null;
+                        }
+                    }, 1000)
+                }
+            }
         },
 
         created() {

@@ -137,6 +137,8 @@
                   console.log(res.data.results);
                   this.course_list = res.data.results;
                   this.total = res.data.count;
+              }).catch(error =>{
+                  this.$message.error('查询课程有误');
               })
             },
             change_order_type(type){
